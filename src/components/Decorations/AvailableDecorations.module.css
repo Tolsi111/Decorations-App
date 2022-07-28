@@ -5,6 +5,16 @@
     animation: decorations-appear 1s ease-out forwards;
 }
 
+.loadingDecorations {
+    text-align: center;
+    color: #535204;
+}
+
+.errorDecorations {
+    text-align: center;
+    color: darkred;
+}
+
 .decorations ul {
     list-style: none;
     margin: 0;
