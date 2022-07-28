@@ -48,7 +48,12 @@ function Checkout(props) {
             return;
         }
 
-        //Submit cart data
+        props.onConfirm({
+            name: enteredName,
+            street: enteredStreet,
+            city: enteredCity,
+            postal: enteredPostal
+        });
     }
 
     return (
@@ -75,7 +80,7 @@ function Checkout(props) {
             </div>
             <div className={classes.actions}>
                 <button type={"button"} onClick={props.onCancel}>Cancel</button>
-                <button onClick={props.onConfirm}>Confirm</button>
+                <button>Confirm</button>
             </div>
         </form>
     );

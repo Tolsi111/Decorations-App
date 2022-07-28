@@ -13,7 +13,7 @@ function cartReducer(state, action) {
         const existingCartItem = state.items[existingCartItemIndex]
         let updatedItems;
 
-        if(existingCartItem) {
+        if (existingCartItem) {
             const updatedItem = {
                 ...existingCartItem,
                 amount: existingCartItem.amount + action.item.amount
@@ -28,10 +28,7 @@ function cartReducer(state, action) {
             items: updatedItems,
             totalAmount: updatedTotalAmount
         }
-    }
-
-    if (action.type === 'REMOVE') {
-        console.log(action.id)
+    } else if (action.type === 'REMOVE') {
         const existingCartItemIndex = state.items.findIndex((item) => item.id === action.id);
         const existingItem = state.items[existingCartItemIndex];
         const updatedTotalAmount = state.totalAmount - existingItem.price;
@@ -39,7 +36,7 @@ function cartReducer(state, action) {
         if (existingItem.amount === 1) {
             updatedItems = state.items.filter(item => item.id !== action.id);
         } else {
-            const updatedItem = { ...existingItem, amount: existingItem.amount - 1 };
+            const updatedItem = {...existingItem, amount: existingItem.amount - 1};
             updatedItems = [...state.items];
             updatedItems[existingCartItemIndex] = updatedItem;
         }
@@ -48,9 +45,9 @@ function cartReducer(state, action) {
             items: updatedItems,
             totalAmount: updatedTotalAmount
         }
+    } else {
+        return defaultCartState
     }
-
-    return defaultCartState
 }
 
 function CartProvider(props) {
@@ -71,11 +68,18 @@ function CartProvider(props) {
         });
     }
 
+    function resetCart() {
+        dispatchCartAction({
+            type: 'RESET'
+        })
+    }
+
     const cartContext = {
         items: cartState.items,
         totalAmount: cartState.totalAmount,
         addItem: addItemToCart,
-        removeItem: deleteItemFromCart
+        removeItem: deleteItemFromCart,
+        resetCart: resetCart
     }
 
     return <CartContext.Provider value={cartContext}>{props.children}</CartContext.Provider>

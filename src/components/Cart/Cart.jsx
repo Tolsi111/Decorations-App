@@ -10,6 +10,8 @@ function Cart(props) {
     const totalAmount = `$${cartCtx.totalAmount.toFixed(2)}`
     const hasItems = cartCtx.items.length > 0;
     const [showCheckoutForm, setShowCheckoutForm] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [didSubmit, setDidSubmit] = useState(false);
 
 
     function cartItemAddHandler(item) {
@@ -24,9 +26,20 @@ function Cart(props) {
         setShowCheckoutForm(true);
     }
 
-    // function hideCheckout() {
-    //     setShowCheckoutForm(false);
-    // }
+    async function submitOrderHandler(userData) {
+        setIsSubmitting(true);
+        const response = await fetch('https://home-deco-app-default-rtdb.firebaseio.com/orders.json', {
+            method: 'POST',
+            body: JSON.stringify({
+                user: userData,
+                orderedItems: cartCtx.items
+            })
+        });
+        setIsSubmitting(false);
+        setDidSubmit(true);
+        cartCtx.resetCart();
+    }
+
     const modalActions = <div className={classes.actions}>
         <button className={classes['button--alt']} onClick={props.onHideCart}>Close</button>
         {hasItems && <button className={classes.button} onClick={showCheckout}>Order</button>}
@@ -44,15 +57,25 @@ function Cart(props) {
             </CartItem>)}
     </ul>;
 
+    const cartContent = <>
+        {cartItems}
+        <div className={classes.total}>
+            <span>Total Amount</span>
+            <span>{totalAmount}</span>
+        </div>
+        {!showCheckoutForm && modalActions}
+        {showCheckoutForm && <Checkout onCancel={props.onHideCart} onConfirm={submitOrderHandler}/>}
+    </>
+
+    const isSubmittingCartContent = <p>Processing order...</p>
+
+    const didSubmitCartContent = <p>Order received!</p>
+
     return (
         <Modal onClick={props.onHideCart}>
-            {cartItems}
-            <div className={classes.total}>
-                <span>Total Amount</span>
-                <span>{totalAmount}</span>
-            </div>
-            {!showCheckoutForm && modalActions}
-            {showCheckoutForm && <Checkout onCancel={props.onHideCart}/>}
+            {!isSubmitting && !didSubmit && cartContent}
+            {isSubmitting && isSubmittingCartContent}
+            {didSubmit && !isSubmitting && didSubmitCartContent}
         </Modal>
     );
 }
